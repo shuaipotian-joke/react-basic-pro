@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import './App.scss'
 import avatar from './images/bozai.png'
-
+import _ from 'lodash'
+import classNames from 'classnames'
 /**
  * 评论列表的渲染和操作
  *
@@ -80,7 +81,7 @@ const tabs = [
 const App = () => {
   // 渲染评论列表
   // 1.使用useState维护list
-  const [commentList, setCommentList] = React.useState(defaultList)
+  const [commentList, setCommentList] = React.useState(_.orderBy(defaultList,'like','desc'))
   const delComment = (id)=>{
     console.log(id)
     const newList = commentList.filter(item=>item.rpid!==id)
@@ -90,6 +91,11 @@ const App = () => {
   function handleChangeTab(type){
     console.log(type)
     setType(type)
+    if(type === 'hot'){
+      setCommentList(_.orderBy(commentList,'like','desc'))
+    } else{
+      setCommentList(_.orderBy(commentList,'ctime','desc'))
+    }
   }
   return (
     <div className="app">
@@ -104,7 +110,7 @@ const App = () => {
           <li className="nav-sort">
             {/* 高亮类名： active */}
             
-            {tabs.map(item=><span key={item.type} className={`nav-item ${item.type === type && 'active'}`} onClick={()=>handleChangeTab(item.type)}>{item.text}</span>)}
+            {tabs.map(item=><span key={item.type} className={classNames('nav-item',{active:type===item.type})} onClick={()=>handleChangeTab(item.type)}>{item.text}</span>)}
           </li>
         </ul>
       </div>
